@@ -1,9 +1,5 @@
 import { PrismaClient } from "@prisma/client";
 import { PrismaLibSql } from "@prisma/adapter-libsql";
-import sharp from "sharp";
-import { readdir, readFile, mkdir, writeFile } from "fs/promises";
-import path from "path";
-import crypto from "crypto";
 
 function createPrismaClient() {
   if (process.env.TURSO_DATABASE_URL) {
@@ -17,161 +13,6 @@ function createPrismaClient() {
 }
 
 const prisma = createPrismaClient();
-
-interface ImageInfo {
-  file: string;
-  alt: string;
-}
-
-const personalWorkImages: ImageInfo[] = [
-  { file: "india-taj-mahal.jpg", alt: "Taj Mahal at sunrise" },
-  { file: "india-varanasi.jpg", alt: "Varanasi ghats" },
-  { file: "india-landscape.jpg", alt: "Indian landscape" },
-  { file: "india-holi.jpg", alt: "Holi festival colors" },
-  { file: "india-temple.jpg", alt: "Ancient temple" },
-  { file: "india-gate.jpg", alt: "India Gate, New Delhi" },
-  { file: "india-river.jpg", alt: "Sacred river" },
-  { file: "india-beach.jpg", alt: "Indian coastline" },
-  { file: "india-fort.jpg", alt: "Historic fort" },
-  { file: "india-palace.jpg", alt: "Royal palace" },
-  { file: "india-delhi.jpg", alt: "Streets of Delhi" },
-  { file: "india-market.jpg", alt: "Colorful market" },
-  { file: "india-kerala.jpg", alt: "Kerala backwaters" },
-  { file: "india-mountains.jpg", alt: "Himalayan mountains" },
-  { file: "india-street.jpg", alt: "Street life" },
-];
-
-const commercialImages: ImageInfo[] = [
-  { file: "commercial-portrait1.jpg", alt: "Portrait session" },
-  { file: "commercial-portrait2.jpg", alt: "Studio portrait" },
-  { file: "commercial-fashion1.jpg", alt: "Fashion editorial" },
-  { file: "commercial-fashion2.jpg", alt: "Fashion shoot" },
-  { file: "commercial-event.jpg", alt: "Event photography" },
-];
-
-const editorialImages: ImageInfo[] = [
-  { file: "editorial-fashion1.jpg", alt: "Editorial fashion" },
-  { file: "editorial-fashion2.jpg", alt: "Magazine editorial" },
-  { file: "editorial-magazine1.jpg", alt: "Portrait editorial" },
-  { file: "editorial-magazine2.jpg", alt: "Editorial portrait" },
-  { file: "editorial-portrait.jpg", alt: "Lifestyle editorial" },
-];
-
-async function processImage(filename: string): Promise<{
-  webpFilename: string;
-  relativePath: string;
-  width: number;
-  height: number;
-  size: number;
-  blurDataUrl: string;
-}> {
-  const samplesDir = path.join(process.cwd(), "public", "uploads", "samples");
-  const outputDir = path.join(process.cwd(), "public", "uploads", "2025", "content");
-  await mkdir(outputDir, { recursive: true });
-
-  const inputPath = path.join(samplesDir, filename);
-  const buffer = await readFile(inputPath);
-  const image = sharp(buffer);
-  const metadata = await image.metadata();
-  const width = metadata.width || 1200;
-  const height = metadata.height || 800;
-
-  const uniqueId = crypto.randomBytes(6).toString("hex");
-  const webpFilename = `${path.parse(filename).name}-${uniqueId}.webp`;
-  const outputPath = path.join(outputDir, webpFilename);
-
-  await image.webp({ quality: 85 }).toFile(outputPath);
-
-  const blurBuffer = await sharp(buffer)
-    .resize(10, 10, { fit: "inside" })
-    .webp({ quality: 20 })
-    .toBuffer();
-  const blurDataUrl = `data:image/webp;base64,${blurBuffer.toString("base64")}`;
-
-  const { size } = await import("fs").then((fs) => fs.statSync(outputPath));
-
-  return {
-    webpFilename,
-    relativePath: `/uploads/2025/content/${webpFilename}`,
-    width,
-    height,
-    size,
-    blurDataUrl,
-  };
-}
-
-async function createImagesAndGallery(
-  categorySlug: string,
-  gallerySlug: string,
-  galleryTranslations: Record<string, { title: string; description: string }>,
-  images: ImageInfo[]
-) {
-  const category = await prisma.category.findUnique({ where: { slug: categorySlug } });
-  if (!category) {
-    console.log(`Category ${categorySlug} not found, skipping`);
-    return;
-  }
-
-  // Check if gallery already exists
-  const existing = await prisma.gallery.findUnique({ where: { slug: gallerySlug } });
-  if (existing) {
-    console.log(`Gallery ${gallerySlug} already exists, skipping`);
-    return;
-  }
-
-  console.log(`Creating gallery: ${gallerySlug}`);
-
-  const imageRecords: string[] = [];
-
-  for (const img of images) {
-    console.log(`  Processing: ${img.file}`);
-    try {
-      const processed = await processImage(img.file);
-      const dbImage = await prisma.image.create({
-        data: {
-          filename: processed.webpFilename,
-          originalName: img.file,
-          path: processed.relativePath,
-          width: processed.width,
-          height: processed.height,
-          size: processed.size,
-          mimeType: "image/webp",
-          blurDataUrl: processed.blurDataUrl,
-          alt: img.alt,
-        },
-      });
-      imageRecords.push(dbImage.id);
-    } catch (err) {
-      console.error(`  Error processing ${img.file}:`, err);
-    }
-  }
-
-  // Create gallery
-  const gallery = await prisma.gallery.create({
-    data: {
-      slug: gallerySlug,
-      categoryId: category.id,
-      sortOrder: 0,
-      publishedAt: new Date(),
-      translations: {
-        create: Object.entries(galleryTranslations).map(([locale, trans]) => ({
-          locale,
-          title: trans.title,
-          description: trans.description,
-        })),
-      },
-      images: {
-        create: imageRecords.map((imageId, index) => ({
-          imageId,
-          sortOrder: index,
-        })),
-      },
-    },
-  });
-
-  console.log(`  Gallery created with ${imageRecords.length} images`);
-  return gallery;
-}
 
 async function updateAboutPage() {
   const page = await prisma.page.findUnique({ where: { slug: "about" } });
@@ -236,54 +77,7 @@ hypsoindia@gmail.com`,
 }
 
 async function main() {
-  console.log("Starting content seed...\n");
-
-  // Personal Work galleries
-  await createImagesAndGallery(
-    "personal-work",
-    "india-journey",
-    {
-      tr: { title: "Hindistan Yolculuğu", description: "Hindistan'ın büyüleyici manzaraları ve kültürel zenginlikleri" },
-      en: { title: "India Journey", description: "The mesmerizing landscapes and cultural richness of India" },
-      fr: { title: "Voyage en Inde", description: "Les paysages fascinants et la richesse culturelle de l'Inde" },
-    },
-    personalWorkImages.slice(0, 8)
-  );
-
-  await createImagesAndGallery(
-    "personal-work",
-    "streets-and-souls",
-    {
-      tr: { title: "Sokaklar ve Ruhlar", description: "Hindistan sokaklarından insanlık halleri" },
-      en: { title: "Streets & Souls", description: "Human stories from the streets of India" },
-      fr: { title: "Rues et Âmes", description: "Histoires humaines des rues de l'Inde" },
-    },
-    personalWorkImages.slice(8, 15)
-  );
-
-  // Commercial gallery
-  await createImagesAndGallery(
-    "commercial",
-    "portraits-and-brands",
-    {
-      tr: { title: "Portreler ve Markalar", description: "Ticari ve marka çekimleri" },
-      en: { title: "Portraits & Brands", description: "Commercial and brand photography" },
-      fr: { title: "Portraits et Marques", description: "Photographie commerciale et de marque" },
-    },
-    commercialImages
-  );
-
-  // Editorial gallery
-  await createImagesAndGallery(
-    "editorial",
-    "magazine-editorials",
-    {
-      tr: { title: "Dergi Editöryalleri", description: "Moda ve yaşam tarzı dergileri için editöryal çekimler" },
-      en: { title: "Magazine Editorials", description: "Editorial shoots for fashion and lifestyle magazines" },
-      fr: { title: "Éditoriaux Magazine", description: "Shootings éditoriaux pour magazines de mode et lifestyle" },
-    },
-    editorialImages
-  );
+  console.log("Starting content seed (text only, no images)...\n");
 
   // Update about page
   await updateAboutPage();
@@ -291,7 +85,7 @@ async function main() {
   // Create sample blog posts
   const existingPosts = await prisma.blogPost.count();
   if (existingPosts === 0) {
-    console.log("\nCreating sample blog posts...");
+    console.log("Creating sample blog posts...");
 
     await prisma.blogPost.create({
       data: {
