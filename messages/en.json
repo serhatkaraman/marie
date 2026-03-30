@@ -1,0 +1,54 @@
+{
+  "nav": {
+    "home": "Home",
+    "personalWork": "Personal Work",
+    "commercial": "Commercial",
+    "editorial": "Editorial",
+    "films": "Films",
+    "about": "About",
+    "blog": "Blog",
+    "contact": "Contact",
+    "printSale": "Print Sale",
+    "work": "Work"
+  },
+  "contact": {
+    "title": "Contact",
+    "subtitle": "Have a project in mind? Let's talk.",
+    "name": "Your Name",
+    "email": "Email",
+    "subject": "Subject",
+    "message": "Your Message",
+    "send": "Send",
+    "sending": "Sending...",
+    "success": "Your message has been sent successfully!",
+    "error": "Something went wrong. Please try again."
+  },
+  "about": {
+    "title": "About"
+  },
+  "blog": {
+    "title": "Blog",
+    "readMore": "Read More",
+    "noPosts": "No posts yet."
+  },
+  "gallery": {
+    "viewProject": "View Project",
+    "backToGallery": "Back to Gallery",
+    "noImages": "No images yet."
+  },
+  "common": {
+    "loading": "Loading...",
+    "backToTop": "Back to Top",
+    "allRightsReserved": "All Rights Reserved",
+    "language": "Language",
+    "previous": "Previous",
+    "next": "Next",
+    "close": "Close"
+  },
+  "films": {
+    "title": "Films"
+  },
+  "printSale": {
+    "title": "Print Sale"
+  }
+}

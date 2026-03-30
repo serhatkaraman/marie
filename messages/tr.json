@@ -1,0 +1,54 @@
+{
+  "nav": {
+    "home": "Ana Sayfa",
+    "personalWork": "Kişisel Çalışmalar",
+    "commercial": "Ticari",
+    "editorial": "Editöryal",
+    "films": "Filmler",
+    "about": "Hakkında",
+    "blog": "Blog",
+    "contact": "İletişim",
+    "printSale": "Baskı Satış",
+    "work": "Çalışmalar"
+  },
+  "contact": {
+    "title": "İletişim",
+    "subtitle": "Bir projeniz mi var? Hadi konuşalım.",
+    "name": "Adınız",
+    "email": "E-posta",
+    "subject": "Konu",
+    "message": "Mesajınız",
+    "send": "Gönder",
+    "sending": "Gönderiliyor...",
+    "success": "Mesajınız başarıyla gönderildi!",
+    "error": "Bir hata oluştu. Lütfen tekrar deneyin."
+  },
+  "about": {
+    "title": "Hakkında"
+  },
+  "blog": {
+    "title": "Blog",
+    "readMore": "Devamını Oku",
+    "noPosts": "Henüz yazı yok."
+  },
+  "gallery": {
+    "viewProject": "Projeyi Gör",
+    "backToGallery": "Galeriye Dön",
+    "noImages": "Henüz görsel yok."
+  },
+  "common": {
+    "loading": "Yükleniyor...",
+    "backToTop": "Yukarı Dön",
+    "allRightsReserved": "Tüm Hakları Saklıdır",
+    "language": "Dil",
+    "previous": "Önceki",
+    "next": "Sonraki",
+    "close": "Kapat"
+  },
+  "films": {
+    "title": "Filmler"
+  },
+  "printSale": {
+    "title": "Baskı Satış"
+  }
+}

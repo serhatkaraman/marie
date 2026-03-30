@@ -1,0 +1,54 @@
+{
+  "nav": {
+    "home": "Accueil",
+    "personalWork": "Travail Personnel",
+    "commercial": "Commercial",
+    "editorial": "Éditorial",
+    "films": "Films",
+    "about": "À Propos",
+    "blog": "Blog",
+    "contact": "Contact",
+    "printSale": "Vente de Tirages",
+    "work": "Travaux"
+  },
+  "contact": {
+    "title": "Contact",
+    "subtitle": "Vous avez un projet? Parlons-en.",
+    "name": "Votre Nom",
+    "email": "E-mail",
+    "subject": "Sujet",
+    "message": "Votre Message",
+    "send": "Envoyer",
+    "sending": "Envoi en cours...",
+    "success": "Votre message a été envoyé avec succès!",
+    "error": "Une erreur est survenue. Veuillez réessayer."
+  },
+  "about": {
+    "title": "À Propos"
+  },
+  "blog": {
+    "title": "Blog",
+    "readMore": "Lire la Suite",
+    "noPosts": "Aucun article pour le moment."
+  },
+  "gallery": {
+    "viewProject": "Voir le Projet",
+    "backToGallery": "Retour à la Galerie",
+    "noImages": "Aucune image pour le moment."
+  },
+  "common": {
+    "loading": "Chargement...",
+    "backToTop": "Retour en Haut",
+    "allRightsReserved": "Tous Droits Réservés",
+    "language": "Langue",
+    "previous": "Précédent",
+    "next": "Suivant",
+    "close": "Fermer"
+  },
+  "films": {
+    "title": "Films"
+  },
+  "printSale": {
+    "title": "Vente de Tirages"
+  }
+}
