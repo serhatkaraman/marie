@@ -51,7 +51,7 @@ export default function EditPagePage() {
       <h1 className="text-2xl font-serif text-primary mb-6">Edit Page</h1>
 
       <form onSubmit={handleSave} className="bg-white rounded-xl border border-border p-6 space-y-4">
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <label className="block text-xs text-muted mb-1 uppercase tracking-wider">Slug</label>
             <input name="slug" defaultValue={page.slug} required className="w-full border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-accent" />

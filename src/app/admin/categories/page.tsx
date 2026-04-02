@@ -71,7 +71,7 @@ export default function CategoriesPage() {
             <label className="block text-xs text-muted mb-1 uppercase tracking-wider">Slug</label>
             <input name="slug" required className="w-full border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-accent" placeholder="e.g. landscape" />
           </div>
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             {["tr", "en", "fr"].map((locale) => (
               <div key={locale} className="space-y-2">
                 <p className="text-xs font-medium text-muted uppercase">{locale}</p>
@@ -88,7 +88,7 @@ export default function CategoriesPage() {
 
       <div className="space-y-3">
         {categories.map((cat) => (
-          <div key={cat.id} className="bg-white rounded-xl border border-border p-5 flex items-center justify-between">
+          <div key={cat.id} className="bg-white rounded-xl border border-border p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div>
               <div className="flex items-center gap-3">
                 <h3 className="text-sm font-medium text-primary">

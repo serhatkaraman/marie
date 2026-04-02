@@ -92,7 +92,7 @@ export default function EditCategoryPage() {
           <input type="checkbox" name="isVisible" id="isVisible" defaultChecked={category.isVisible} className="accent-accent" />
           <label htmlFor="isVisible" className="text-sm text-body">Visible</label>
         </div>
-        <div className="grid grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           {["tr", "en", "fr"].map((locale) => (
             <div key={locale} className="space-y-2">
               <p className="text-xs font-medium text-muted uppercase">{locale}</p>
@@ -123,7 +123,7 @@ export default function EditCategoryPage() {
             <label className="block text-xs text-muted mb-1 uppercase tracking-wider">Gallery Slug</label>
             <input name="gallery_slug" required className="w-full border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-accent" />
           </div>
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             {["tr", "en", "fr"].map((locale) => (
               <div key={locale}>
                 <p className="text-xs font-medium text-muted uppercase mb-1">{locale}</p>
@@ -133,7 +133,7 @@ export default function EditCategoryPage() {
           </div>
           <div>
             <label className="block text-xs text-muted mb-2 uppercase tracking-wider">Select Images</label>
-            <div className="grid grid-cols-4 sm:grid-cols-6 gap-2 max-h-60 overflow-y-auto">
+            <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-6 gap-2 max-h-60 overflow-y-auto">
               {images.map((img) => (
                 <label key={img.id} className="cursor-pointer">
                   <input type="checkbox" name="images" value={img.id} className="hidden peer" />

@@ -61,7 +61,7 @@ export default function PagesManagement() {
 
       {showForm && (
         <form onSubmit={handleCreate} className="bg-white rounded-xl border border-border p-6 mb-6 space-y-4">
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-xs text-muted mb-1 uppercase tracking-wider">Slug</label>
               <input name="slug" required className="w-full border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-accent" />
@@ -76,7 +76,7 @@ export default function PagesManagement() {
               </select>
             </div>
           </div>
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             {["tr", "en", "fr"].map((locale) => (
               <div key={locale} className="space-y-2">
                 <p className="text-xs font-medium text-muted uppercase">{locale}</p>

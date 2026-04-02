@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useState, useEffect } from "react";
 
 const menuItems = [
   { href: "/admin", label: "Dashboard", icon: "M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" },
@@ -16,69 +17,110 @@ const menuItems = [
 
 export function AdminSidebar() {
   const pathname = usePathname();
+  const [open, setOpen] = useState(false);
+
+  // Close sidebar on route change
+  useEffect(() => {
+    setOpen(false);
+  }, [pathname]);
+
+  // Prevent body scroll when sidebar is open on mobile
+  useEffect(() => {
+    if (open) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => { document.body.style.overflow = ""; };
+  }, [open]);
 
   return (
-    <aside className="fixed left-0 top-0 bottom-0 w-[250px] bg-white border-r border-border z-40">
-      <div className="px-6 pt-6 pb-4 border-b border-border">
-        <Link href="/admin" className="text-lg font-serif text-primary">
-          Marie Meister
-        </Link>
-        <p className="text-xs text-muted mt-0.5">Admin Panel</p>
+    <>
+      {/* Mobile top bar */}
+      <div className="lg:hidden fixed top-0 left-0 right-0 h-14 bg-white border-b border-border z-50 flex items-center px-4">
+        <button onClick={() => setOpen(true)} className="p-2 -ml-2">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+        </button>
+        <span className="ml-3 font-serif text-primary text-sm">Admin Panel</span>
       </div>
 
-      <nav className="p-4">
-        <ul className="space-y-1">
-          {menuItems.map((item) => {
-            const isActive =
-              item.href === "/admin"
-                ? pathname === "/admin"
-                : pathname.startsWith(item.href);
-            return (
-              <li key={item.href}>
-                <Link
-                  href={item.href}
-                  className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors ${
-                    isActive
-                      ? "bg-accent/10 text-accent"
-                      : "text-body hover:bg-gray-50"
-                  }`}
-                >
-                  <svg
-                    width="18"
-                    height="18"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="1.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <path d={item.icon} />
-                  </svg>
-                  {item.label}
-                </Link>
-              </li>
-            );
-          })}
-        </ul>
-      </nav>
+      {/* Overlay */}
+      {open && (
+        <div className="lg:hidden fixed inset-0 bg-black/40 z-50" onClick={() => setOpen(false)} />
+      )}
 
-      <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-border">
-        <Link
-          href="/"
-          className="block text-xs text-muted hover:text-accent transition-colors mb-2"
-        >
-          &larr; View Site
-        </Link>
-        <form action="/api/auth/signout" method="POST">
-          <button
-            type="submit"
-            className="text-xs text-muted hover:text-red-500 transition-colors"
-          >
-            Sign Out
+      {/* Sidebar */}
+      <aside className={`fixed left-0 top-0 bottom-0 w-[250px] bg-white border-r border-border z-50 transition-transform duration-300 lg:translate-x-0 ${open ? "translate-x-0" : "-translate-x-full"}`}>
+        <div className="px-6 pt-6 pb-4 border-b border-border flex items-center justify-between">
+          <div>
+            <Link href="/admin" className="text-lg font-serif text-primary">
+              Marie Meister
+            </Link>
+            <p className="text-xs text-muted mt-0.5">Admin Panel</p>
+          </div>
+          <button onClick={() => setOpen(false)} className="lg:hidden p-1">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M6 18L18 6M6 6l12 12" />
+            </svg>
           </button>
-        </form>
-      </div>
-    </aside>
+        </div>
+
+        <nav className="p-4">
+          <ul className="space-y-1">
+            {menuItems.map((item) => {
+              const isActive =
+                item.href === "/admin"
+                  ? pathname === "/admin"
+                  : pathname.startsWith(item.href);
+              return (
+                <li key={item.href}>
+                  <Link
+                    href={item.href}
+                    className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors ${
+                      isActive
+                        ? "bg-accent/10 text-accent"
+                        : "text-body hover:bg-gray-50"
+                    }`}
+                  >
+                    <svg
+                      width="18"
+                      height="18"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <path d={item.icon} />
+                    </svg>
+                    {item.label}
+                  </Link>
+                </li>
+              );
+            })}
+          </ul>
+        </nav>
+
+        <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-border">
+          <Link
+            href="/"
+            className="block text-xs text-muted hover:text-accent transition-colors mb-2"
+          >
+            &larr; View Site
+          </Link>
+          <form action="/api/auth/signout" method="POST">
+            <button
+              type="submit"
+              className="text-xs text-muted hover:text-red-500 transition-colors"
+            >
+              Sign Out
+            </button>
+          </form>
+        </div>
+      </aside>
+    </>
   );
 }
