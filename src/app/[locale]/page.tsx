@@ -39,7 +39,7 @@ export default async function HomePage({
     cat.galleries.flatMap((gal) =>
       gal.images.map((gi) => ({
         id: gi.image.id,
-        src: gi.image.path.startsWith("/") ? gi.image.path : `/${gi.image.path}`,
+        src: gi.image.path.startsWith("http") ? gi.image.path : gi.image.path.startsWith("/") ? gi.image.path : `/${gi.image.path}`,
         alt: gi.image.alt || cat.translations[0]?.name || "",
         width: gi.image.width,
         height: gi.image.height,

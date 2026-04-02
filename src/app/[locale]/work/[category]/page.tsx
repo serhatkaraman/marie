@@ -57,7 +57,7 @@ export default async function CategoryPage({
                 {coverImage && (
                   <div className="relative aspect-[4/3] overflow-hidden mb-3">
                     <img
-                      src={coverImage.path.startsWith("/") ? coverImage.path : `/${coverImage.path}`}
+                      src={coverImage.path.startsWith("http") ? coverImage.path : coverImage.path.startsWith("/") ? coverImage.path : `/${coverImage.path}`}
                       alt={galleryTitle}
                       className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
                     />
@@ -78,7 +78,7 @@ export default async function CategoryPage({
   const allImages = cat.galleries.flatMap((gal) =>
     gal.images.map((gi) => ({
       id: gi.image.id,
-      src: gi.image.path.startsWith("/") ? gi.image.path : `/${gi.image.path}`,
+      src: gi.image.path.startsWith("http") ? gi.image.path : gi.image.path.startsWith("/") ? gi.image.path : `/${gi.image.path}`,
       alt: gi.image.alt || categoryName,
       width: gi.image.width,
       height: gi.image.height,

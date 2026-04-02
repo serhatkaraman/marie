@@ -37,7 +37,7 @@ export default async function GalleryPage({
 
   const images = gallery.images.map((gi) => ({
     id: gi.image.id,
-    src: gi.image.path.startsWith("/") ? gi.image.path : `/${gi.image.path}`,
+    src: gi.image.path.startsWith("http") ? gi.image.path : gi.image.path.startsWith("/") ? gi.image.path : `/${gi.image.path}`,
     alt: gi.image.alt || galleryTitle,
     width: gi.image.width,
     height: gi.image.height,

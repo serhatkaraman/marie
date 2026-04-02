@@ -49,7 +49,7 @@ export default async function WorkPage({
               {coverImage ? (
                 <div className="relative aspect-[3/2] overflow-hidden mb-4">
                   <img
-                    src={coverImage.path.startsWith("/") ? coverImage.path : `/${coverImage.path}`}
+                    src={coverImage.path.startsWith("http") ? coverImage.path : coverImage.path.startsWith("/") ? coverImage.path : `/${coverImage.path}`}
                     alt={name}
                     className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.03]"
                   />
