@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { hash, compare } from "bcryptjs";
 
 export async function GET(request: NextRequest) {
   const session = await auth();
@@ -34,6 +35,26 @@ export async function PUT(request: NextRequest) {
     await prisma.contactMessage.update({
       where: { id: body.messageId },
       data: { isRead: true },
+    });
+    return NextResponse.json({ success: true });
+  }
+
+  if (body.action === "changePassword") {
+    const user = await prisma.user.findFirst();
+    if (!user) {
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
+    }
+    const valid = await compare(body.currentPassword, user.password);
+    if (!valid) {
+      return NextResponse.json({ error: "Current password is incorrect" }, { status: 400 });
+    }
+    if (!body.newPassword || body.newPassword.length < 6) {
+      return NextResponse.json({ error: "New password must be at least 6 characters" }, { status: 400 });
+    }
+    const hashed = await hash(body.newPassword, 12);
+    await prisma.user.update({
+      where: { id: user.id },
+      data: { password: hashed },
     });
     return NextResponse.json({ success: true });
   }
