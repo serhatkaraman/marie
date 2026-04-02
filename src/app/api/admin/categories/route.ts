@@ -10,6 +10,22 @@ export async function GET(request: NextRequest) {
 
   const { searchParams } = new URL(request.url);
   const id = searchParams.get("id");
+  const galleryId = searchParams.get("galleryId");
+
+  // Get single gallery with images
+  if (galleryId) {
+    const gallery = await prisma.gallery.findUnique({
+      where: { id: galleryId },
+      include: {
+        translations: true,
+        images: {
+          orderBy: { sortOrder: "asc" },
+          include: { image: true },
+        },
+      },
+    });
+    return NextResponse.json({ gallery });
+  }
 
   if (id) {
     const category = await prisma.category.findUnique({
@@ -110,6 +126,44 @@ export async function PUT(request: NextRequest) {
   }
 
   const body = await request.json();
+
+  // Update gallery
+  if (body.action === "updateGallery") {
+    const { galleryId, slug, isVisible, translations, imageIds } = body;
+
+    await prisma.gallery.update({
+      where: { id: galleryId },
+      data: { slug, isVisible },
+    });
+
+    if (translations) {
+      for (const [locale, trans] of Object.entries(translations) as [string, any][]) {
+        await prisma.galleryTranslation.upsert({
+          where: { galleryId_locale: { galleryId, locale } },
+          update: { title: trans.title, description: trans.description || null },
+          create: { galleryId, locale, title: trans.title, description: trans.description || null },
+        });
+      }
+    }
+
+    // Update images if provided
+    if (imageIds) {
+      // Remove existing gallery images
+      await prisma.galleryImage.deleteMany({ where: { galleryId } });
+      // Add new ones
+      await prisma.galleryImage.createMany({
+        data: imageIds.map((imageId: string, index: number) => ({
+          galleryId,
+          imageId,
+          sortOrder: index,
+        })),
+      });
+    }
+
+    return NextResponse.json({ success: true });
+  }
+
+  // Update category
   const { id, slug, isVisible, sortOrder, translations } = body;
 
   await prisma.category.update({
@@ -142,6 +196,12 @@ export async function DELETE(request: NextRequest) {
 
   const { searchParams } = new URL(request.url);
   const id = searchParams.get("id");
+  const galleryId = searchParams.get("galleryId");
+
+  if (galleryId) {
+    await prisma.gallery.delete({ where: { id: galleryId } });
+    return NextResponse.json({ success: true });
+  }
 
   if (!id) {
     return NextResponse.json({ error: "ID required" }, { status: 400 });

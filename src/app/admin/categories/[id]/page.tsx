@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useParams, useRouter } from "next/navigation";
+import Link from "next/link";
 
 export default function EditCategoryPage() {
   const params = useParams();
@@ -152,12 +153,30 @@ export default function EditCategoryPage() {
 
       <div className="space-y-3">
         {galleries.map((gal: any) => (
-          <div key={gal.id} className="bg-white rounded-xl border border-border p-4 flex items-center justify-between">
+          <div key={gal.id} className="bg-white rounded-xl border border-border p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div>
               <h3 className="text-sm font-medium text-primary">
                 {gal.translations?.find((t: any) => t.locale === "en")?.title || gal.slug}
               </h3>
-              <p className="text-xs text-muted">{gal._count?.images || 0} images</p>
+              <p className="text-xs text-muted">{gal._count?.images || 0} images &middot; /{gal.slug}</p>
+            </div>
+            <div className="flex items-center gap-3">
+              <Link
+                href={`/admin/galleries/${gal.id}`}
+                className="text-xs text-accent hover:underline"
+              >
+                Edit
+              </Link>
+              <button
+                onClick={async () => {
+                  if (!confirm("Delete this gallery?")) return;
+                  await fetch(`/api/admin/categories?galleryId=${gal.id}`, { method: "DELETE" });
+                  fetchData();
+                }}
+                className="text-xs text-red-500 hover:underline"
+              >
+                Delete
+              </button>
             </div>
           </div>
         ))}
