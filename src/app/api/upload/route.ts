@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { rateLimit } from "@/lib/rate-limit";
 import sharp from "sharp";
 import crypto from "crypto";
 import { put } from "@vercel/blob";
@@ -14,6 +15,14 @@ export async function POST(request: NextRequest) {
   }
 
   try {
+    const ip = request.headers.get("x-forwarded-for") || "unknown";
+    if (!rateLimit(`upload:${ip}`, 30, 60000)) {
+      return NextResponse.json(
+        { error: "Too many uploads. Please try again later." },
+        { status: 429 }
+      );
+    }
+
     const formData = await request.formData();
     const file = formData.get("file") as File;
 
@@ -27,6 +36,15 @@ export async function POST(request: NextRequest) {
     }
 
     const buffer = Buffer.from(await file.arrayBuffer());
+
+    const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
+    if (buffer.length > MAX_FILE_SIZE) {
+      return NextResponse.json(
+        { error: "File too large. Maximum size is 10MB." },
+        { status: 413 }
+      );
+    }
+
     const uniqueId = crypto.randomBytes(8).toString("hex");
     const filename = `${uniqueId}.webp`;
 

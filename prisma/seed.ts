@@ -58,8 +58,35 @@ async function main() {
       },
     },
     {
-      slug: "films",
+      slug: "musicians-artists",
       sortOrder: 3,
+      translations: {
+        tr: { name: "Müzisyenler & Sanatçılar", description: "Müzisyen ve sanatçı çekimleri" },
+        en: { name: "Musicians & Artists", description: "Musician and artist photography" },
+        fr: { name: "Musiciens & Artistes", description: "Photographie de musiciens et d'artistes" },
+      },
+    },
+    {
+      slug: "weddings",
+      sortOrder: 4,
+      translations: {
+        tr: { name: "Düğünler", description: "Düğün fotoğrafçılığı" },
+        en: { name: "Weddings", description: "Wedding photography" },
+        fr: { name: "Mariages", description: "Photographie de mariage" },
+      },
+    },
+    {
+      slug: "family-maternity",
+      sortOrder: 5,
+      translations: {
+        tr: { name: "Aile & Hamilelik", description: "Aile ve hamilelik çekimleri" },
+        en: { name: "Family & Maternity", description: "Family and maternity photography" },
+        fr: { name: "Famille & Maternité", description: "Photographie de famille et de maternité" },
+      },
+    },
+    {
+      slug: "films",
+      sortOrder: 6,
       translations: {
         tr: { name: "Filmler", description: "Video ve film projeleri" },
         en: { name: "Films", description: "Video and film projects" },

@@ -5,6 +5,7 @@ import "@/styles/globals.css";
 
 export const metadata = {
   title: "Admin - Marie Meister",
+  robots: { index: false, follow: false },
 };
 
 export default async function AdminLayout({

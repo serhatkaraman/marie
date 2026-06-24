@@ -2,6 +2,16 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { resend } from "@/lib/resend";
 import { prisma } from "@/lib/prisma";
+import { rateLimit } from "@/lib/rate-limit";
+
+function escapeHtml(str: string): string {
+  return str
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
 
 const contactSchema = z.object({
   name: z.string().min(1).max(100),
@@ -12,6 +22,14 @@ const contactSchema = z.object({
 
 export async function POST(request: NextRequest) {
   try {
+    const ip = request.headers.get("x-forwarded-for") || "unknown";
+    if (!rateLimit(`contact:${ip}`, 5, 60000)) {
+      return NextResponse.json(
+        { error: "Too many requests. Please try again later." },
+        { status: 429 }
+      );
+    }
+
     const body = await request.json();
     const data = contactSchema.parse(body);
 
@@ -32,16 +50,16 @@ export async function POST(request: NextRequest) {
       await resend.emails.send({
         from: "Marie Meister Website <onboarding@resend.dev>",
         to: contactEmail,
-        subject: `New Contact: ${data.subject || "No Subject"} - from ${data.name}`,
+        subject: `New Contact: ${escapeHtml(data.subject || "No Subject")} - from ${escapeHtml(data.name)}`,
         html: `
           <div style="font-family: Georgia, serif; max-width: 600px; margin: 0 auto;">
             <h2 style="color: #111; font-weight: normal;">New Contact Message</h2>
             <hr style="border: none; border-top: 1px solid #e5e5e5;" />
-            <p><strong>Name:</strong> ${data.name}</p>
-            <p><strong>Email:</strong> ${data.email}</p>
-            ${data.subject ? `<p><strong>Subject:</strong> ${data.subject}</p>` : ""}
+            <p><strong>Name:</strong> ${escapeHtml(data.name)}</p>
+            <p><strong>Email:</strong> ${escapeHtml(data.email)}</p>
+            ${data.subject ? `<p><strong>Subject:</strong> ${escapeHtml(data.subject)}</p>` : ""}
             <p><strong>Message:</strong></p>
-            <p style="white-space: pre-line; color: #222;">${data.message}</p>
+            <p style="white-space: pre-line; color: #222;">${escapeHtml(data.message)}</p>
             <hr style="border: none; border-top: 1px solid #e5e5e5;" />
             <p style="color: #999; font-size: 12px;">Sent from mariemeister.com contact form</p>
           </div>

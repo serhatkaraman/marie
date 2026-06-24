@@ -12,9 +12,10 @@ const menuLinks = [
   { href: "/work/personal-work", key: "personalWork" },
   { href: "/work/commercial", key: "commercial" },
   { href: "/work/editorial", key: "editorial" },
-  { href: "/films", key: "films" },
+  { href: "/work/musicians-artists", key: "musiciansArtists" },
+  { href: "/work/weddings", key: "weddings" },
+  { href: "/work/family-maternity", key: "familyMaternity" },
   { href: "/about", key: "about" },
-  { href: "/blog", key: "blog" },
   { href: "/contact", key: "contact" },
   { href: "/print-sale", key: "printSale" },
 ] as const;
